@@ -1,6 +1,7 @@
 
 import gvsoc.systree
 
+
 class MyComp(gvsoc.systree.Component):
     def __init__(self, parent: gvsoc.systree.Component, name: str, value: int):
 
@@ -14,3 +15,9 @@ class MyComp(gvsoc.systree.Component):
 
     def i_INPUT(self) -> gvsoc.systree.SlaveItf:
         return gvsoc.systree.SlaveItf(self, 'input', signature='io')
+
+    def o_NOTIF(self, itf: gvsoc.systree.SlaveItf):
+        self.itf_bind('notif', itf, signature='wire<bool>')
+
+    def i_RESULT(self) -> gvsoc.systree.SlaveItf:
+        return gvsoc.systree.SlaveItf(self, 'result', signature='wire<MyResult>')

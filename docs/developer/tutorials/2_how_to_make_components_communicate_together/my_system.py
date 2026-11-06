@@ -1,12 +1,12 @@
 import cpu.iss.riscv
-import memory.memory
-import vp.clock_domain
-import interco.router
-import utils.loader.loader
-import gvsoc.systree
 import gvsoc.runner
+import gvsoc.systree
+import interco.router
+import memory.memory
 import my_comp
-
+import my_comp2
+import utils.loader.loader
+import vp.clock_domain
 
 GAPY_TARGET = True
 
@@ -26,6 +26,10 @@ class Soc(gvsoc.systree.Component):
         # Custom components
         comp = my_comp.MyComp(self, 'my_comp', value=0x12345678)
         ico.o_MAP(comp.i_INPUT(), 'comp', base=0x20000000, size=0x00001000, rm_base=True)
+
+        comp2 = my_comp2.MyComp2(self, 'my_comp2')
+        comp.o_NOTIF(comp2.i_NOTIF())
+        comp2.o_RESULT(comp.i_RESULT())
 
         # Main memory
         mem = memory.memory.Memory(self, 'mem', size=0x00100000)
@@ -66,6 +70,6 @@ class Rv64(gvsoc.systree.Component):
 class Target(gvsoc.runner.Target):
 
     def __init__(self, parser, options):
-        super(Target, self).__init__(parser, options,
+        super().__init__(parser, options,
             model=Rv64, description="RV64 virtual board")
 
