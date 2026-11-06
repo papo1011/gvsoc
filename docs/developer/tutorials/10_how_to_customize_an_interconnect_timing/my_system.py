@@ -24,7 +24,7 @@ class Soc(gvsoc.systree.Component):
         binary = args.binary
 
         # Main interconnect
-        ico = interco.router.Router(self, 'ico')
+        ico = interco.router.Router(self, 'ico', bandwidth=1)
 
         # Custom components
         comp = my_comp.MyComp(self, 'my_comp', value=0x12345678)
