@@ -1,11 +1,11 @@
 import cpu.iss.riscv
-import memory.memory
-import vp.clock_domain
-import interco.router
-import utils.loader.loader
-import gvsoc.systree
 import gvsoc.runner
-
+import gvsoc.systree
+import interco.router
+import memory.memory
+import my_comp
+import utils.loader.loader
+import vp.clock_domain
 
 GAPY_TARGET = True
 
@@ -40,6 +40,10 @@ class Soc(gvsoc.systree.Component):
         loader.o_START   ( host.i_FETCHEN  ())
         loader.o_ENTRY   ( host.i_ENTRY    ())
 
+        comp = my_comp.MyComp(self, 'my_comp', value=0x12345678)
+        ico.o_MAP(comp.i_INPUT(), 'comp', base=0x20_00_00_00, size=0x00_00_10_00, rm_base=True)
+
+
 
 
 # This is a wrapping component of the real one in order to connect a clock generator to it
@@ -61,6 +65,6 @@ class Rv64(gvsoc.systree.Component):
 class Target(gvsoc.runner.Target):
 
     def __init__(self, parser, options):
-        super(Target, self).__init__(parser, options,
+        super().__init__(parser, options,
             model=Rv64, description="RV64 virtual board")
 
