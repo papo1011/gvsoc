@@ -10,16 +10,20 @@ public:
 
 private:
     static void handle_notif(vp::Block *__this, bool value);
+    static void handle_event(vp::Block *__this, vp::ClockEvent *event);
     vp::WireSlave<bool> notif_itf;
     vp::WireMaster<MyClass *> result_itf;
 
     vp::Trace trace;
+
+    vp::ClockEvent event;
 };
 
 
 MyComp::MyComp(vp::ComponentConf &config)
-    : vp::Component(config)
+    : vp::Component(config), event(this, MyComp::handle_event)
 {
+
     this->notif_itf.set_sync_meth(&MyComp::handle_notif);
     this->new_slave_port("notif", &this->notif_itf);
 
@@ -35,6 +39,15 @@ void MyComp::handle_notif(vp::Block *__this, bool value)
 
     _this->trace.msg(vp::TraceLevel::DEBUG, "Received notif\n");
 
+    if (!_this->event.is_enqueued())
+    {
+        _this->event.enqueue(10);
+    }
+}
+
+void MyComp::handle_event(vp::Block *__this, vp::ClockEvent *event)
+{
+    MyComp *_this = (MyComp *)__this;
     _this->trace.msg(vp::TraceLevel::DEBUG, "Sending result\n");
 
     MyClass result = { .value0=0x11111111, .value1=0x22222222 };
